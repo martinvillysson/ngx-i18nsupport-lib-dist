@@ -17,7 +17,7 @@ exports.ICU_MESSAGE_REF = 'ICU_MESSAGE_REF';
 exports.ICU_MESSAGE = 'ICU_MESSAGE';
 class ParsedMesageTokenizer {
     getLexer() {
-        const lexer = new Tokenizr();
+        const lexer = new Tokenizr.default();
         let plaintext = '';
         lexer.before((ctx, match, rule) => {
             if (rule.name !== exports.TEXT && plaintext !== '') {

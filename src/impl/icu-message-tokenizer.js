@@ -19,7 +19,7 @@ const STATE_NORMAL = 'normal';
 const STATE_IN_MESSAGE = 'in_message';
 class ICUMessageTokenizer {
     getLexer() {
-        const lexer = new Tokenizr();
+        const lexer = new Tokenizr.default();
         let plaintext = '';
         let openedCurlyBracesInTextCounter = 0;
         lexer.before((ctx, match, rule) => {

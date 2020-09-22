@@ -4,28 +4,9 @@
     (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory((global['ngx-i18nsupport'] = global['ngx-i18nsupport'] || {}, global['ngx-i18nsupport']['ngx-i18nsupport-lib'] = {}), global.ng.core, global.util, global.xmldom, global.tokenizr));
 }(this, (function (exports, i0, util, xmldom, Tokenizr) { 'use strict';
 
-    function _interopNamespace(e) {
-        if (e && e.__esModule) { return e; } else {
-            var n = Object.create(null);
-            if (e) {
-                Object.keys(e).forEach(function (k) {
-                    if (k !== 'default') {
-                        var d = Object.getOwnPropertyDescriptor(e, k);
-                        Object.defineProperty(n, k, d.get ? d : {
-                            enumerable: true,
-                            get: function () {
-                                return e[k];
-                            }
-                        });
-                    }
-                });
-            }
-            n['default'] = e;
-            return Object.freeze(n);
-        }
-    }
+    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
-    var Tokenizr__namespace = /*#__PURE__*/_interopNamespace(Tokenizr);
+    var Tokenizr__default = /*#__PURE__*/_interopDefaultLegacy(Tokenizr);
 
     var NgxI18nsupportLibModule = /** @class */ (function () {
         function NgxI18nsupportLibModule() {
@@ -1286,7 +1267,7 @@
         }
         ICUMessageTokenizer.prototype.getLexer = function () {
             var _this = this;
-            var lexer = new Tokenizr__namespace();
+            var lexer = new Tokenizr__default['default']();
             var plaintext = '';
             var openedCurlyBracesInTextCounter = 0;
             lexer.before(function (ctx, match, rule) {
@@ -2213,7 +2194,7 @@
         function ParsedMesageTokenizer() {
         }
         ParsedMesageTokenizer.prototype.getLexer = function () {
-            var lexer = new Tokenizr__namespace();
+            var lexer = new Tokenizr__default['default']();
             var plaintext = '';
             lexer.before(function (ctx, match, rule) {
                 if (rule.name !== TEXT$1 && plaintext !== '') {

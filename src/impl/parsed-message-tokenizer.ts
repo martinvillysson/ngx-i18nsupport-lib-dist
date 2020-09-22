@@ -22,8 +22,8 @@ export interface Token {
 
 export class ParsedMesageTokenizer {
 
-    private getLexer(): Tokenizr {
-        const lexer = new Tokenizr();
+    private getLexer(): Tokenizr.default {
+        const lexer = new Tokenizr.default();
         let plaintext = '';
         lexer.before((ctx, match, rule) => {
             if (rule.name !== TEXT && plaintext !== '') {
@@ -76,7 +76,7 @@ export class ParsedMesageTokenizer {
     }
 
     tokenize(normalizedMessage: string): Token[] {
-        const lexer: Tokenizr = this.getLexer();
+        const lexer: Tokenizr.default = this.getLexer();
         lexer.reset();
         lexer.input(normalizedMessage);
         return lexer.tokens();

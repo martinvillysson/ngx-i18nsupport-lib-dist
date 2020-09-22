@@ -24,10 +24,10 @@ const STATE_NORMAL = 'normal';
 const STATE_IN_MESSAGE = 'in_message';
 
 export class ICUMessageTokenizer {
-    private lexer: Tokenizr;
+    private lexer: Tokenizr.default;
 
-    private getLexer(): Tokenizr {
-        const lexer = new Tokenizr();
+    private getLexer(): Tokenizr.default {
+        const lexer = new Tokenizr.default();
         let plaintext = '';
         let openedCurlyBracesInTextCounter = 0;
         lexer.before((ctx, match, rule) => {
@@ -124,7 +124,7 @@ export class ICUMessageTokenizer {
     }
 
     tokenize(normalizedMessage: string): ICUToken[] {
-        const lexer: Tokenizr = this.getLexer();
+        const lexer: Tokenizr.default = this.getLexer();
         lexer.input(normalizedMessage);
         return lexer.tokens();
     }

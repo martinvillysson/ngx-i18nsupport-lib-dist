@@ -1,7 +1,7 @@
 import { ɵɵdefineNgModule, ɵɵdefineInjector, ɵsetClassMetadata, NgModule } from '@angular/core';
 import { isNullOrUndefined, isString, format } from 'util';
 import { XMLSerializer, DOMParser } from 'xmldom';
-import * as Tokenizr from 'tokenizr';
+import Tokenizr from 'tokenizr';
 
 class NgxI18nsupportLibModule {
 }
