@@ -11,6 +11,7 @@ export declare abstract class AbstractTranslationMessagesFile implements ITransl
     protected _parsedOptionalMasterDocument: Document;
     protected _fileEndsWithEOL: boolean;
     protected transUnits: ITransUnit[];
+    protected optionalMasterTransUnits: ITransUnit[];
     protected _warnings: string[];
     protected _numberOfTransUnitsWithMissingId: number;
     protected _numberOfUntranslatedTransUnits: number;
@@ -90,6 +91,12 @@ export declare abstract class AbstractTranslationMessagesFile implements ITransl
      * @return trans-unit with given id.
      */
     transUnitWithId(id: string): ITransUnit;
+    /**
+     * Get optional trans-unit with given id.
+     * @param id id
+     * @return trans-unit with given id.
+     */
+    optionalMasterTransUnitWithId(id: string): ITransUnit;
     /**
      * Edit functions following her
      */

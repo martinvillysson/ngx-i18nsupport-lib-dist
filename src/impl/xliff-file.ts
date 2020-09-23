@@ -26,11 +26,11 @@ export class XliffFile extends AbstractTranslationMessagesFile implements ITrans
         super();
         this._warnings = [];
         this._numberOfTransUnitsWithMissingId = 0;
-        this.initializeFromContent(xmlString, path, encoding);
+        this.initializeFromContent(xmlString, path, encoding, optionalMaster);
     }
 
-    private initializeFromContent(xmlString: string, path: string, encoding: string): XliffFile {
-        this.parseContent(xmlString, path, encoding);
+    private initializeFromContent(xmlString: string, path: string, encoding: string, optionalMaster?: { xmlContent: string, path: string, encoding: string }): XliffFile {
+        this.parseContent(xmlString, path, encoding, optionalMaster);
         const xliffList = this._parsedDocument.getElementsByTagName('xliff');
         if (xliffList.length !== 1) {
             throw new Error(format('File "%s" seems to be no xliff file (should contain an xliff element)', path));
@@ -73,25 +73,28 @@ export class XliffFile extends AbstractTranslationMessagesFile implements ITrans
 
     protected initializeTransUnits() {
         this.transUnits = [];
-        let transUnitsInOptionalMasterFile: HTMLCollectionOf<Element>;
         const transUnitsInFile = this._parsedDocument.getElementsByTagName('trans-unit');
-        if (this._parsedOptionalMasterDocument) {
-            transUnitsInOptionalMasterFile = this._parsedOptionalMasterDocument.getElementsByTagName('trans-unit');
-        }
+
         for (let i = 0; i < transUnitsInFile.length; i++) {
             const transunit = transUnitsInFile.item(i);
             const id = transunit.getAttribute('id');
             if (!id) {
                 this._warnings.push(format('oops, trans-unit without "id" found in master, please check file %s', this._filename));
             }
-            if (transUnitsInOptionalMasterFile && transUnitsInOptionalMasterFile.length > 0) {
-                const transunitOptionalMaster = transUnitsInOptionalMasterFile.item(i);
-                const idOptionalMaster = transunitOptionalMaster.getAttribute('id');
-                if (!idOptionalMaster) {
-                    this.transUnits.push(new XliffTransUnit(transunit, id, this));
+            this.transUnits.push(new XliffTransUnit(transunit, id, this));
+        }
+
+        if (this._parsedOptionalMasterDocument) {
+            this.optionalMasterTransUnits = [];
+            // if we has an optional master document we push the optional master transunits to the array
+            const transUnitsInOptionalMasterFile = this._parsedOptionalMasterDocument.getElementsByTagName('trans-unit');
+            for (let i = 0; i < transUnitsInOptionalMasterFile.length; i++) {
+                const transunit = transUnitsInOptionalMasterFile.item(i);
+                const id = transunit.getAttribute('id');
+                if (!id) {
+                    this._warnings.push(format('oops, trans-unit without "id" found in master, please check file %s', this._filename));
                 }
-            } else {
-                this.transUnits.push(new XliffTransUnit(transunit, id, this));
+                this.optionalMasterTransUnits.push(new XliffTransUnit(transunit, id, this));
             }
         }
     }
@@ -228,9 +231,9 @@ export class XliffFile extends AbstractTranslationMessagesFile implements ITrans
      * Wben true, content will be copied from source.
      * When false, content will be left empty (if it is not the default language).
      */
-    public createTranslationFileForLang(lang: string, filename: string, isDefaultLang: boolean, copyContent: boolean, optionalMaster?: {xmlContent: string, path: string, encoding: string})
+    public createTranslationFileForLang(lang: string, filename: string, isDefaultLang: boolean, copyContent: boolean, optionalMaster?: { xmlContent: string, path: string, encoding: string })
         : ITranslationMessagesFile {
-        
+
         const translationFile = new XliffFile(this.editedContent(), filename, this.encoding(), optionalMaster);
         translationFile.setNewTransUnitTargetPraefix(this.targetPraefix);
         translationFile.setNewTransUnitTargetSuffix(this.targetSuffix);
@@ -238,6 +241,17 @@ export class XliffFile extends AbstractTranslationMessagesFile implements ITrans
         translationFile.forEachTransUnit((transUnit: ITransUnit) => {
             (<AbstractTransUnit>transUnit).useSourceAsTarget(isDefaultLang, copyContent);
         });
+
+        if (optionalMaster && translationFile.optionalMasterTransUnits && translationFile.optionalMasterTransUnits.length > 0) {
+            // If optional master is specified we will iterate the master transunits and remove from translation file if they already exist in the master
+            translationFile.optionalMasterTransUnits.forEach(unit => {
+                const tranUnit = translationFile.transUnitWithId(unit.id);
+                if (tranUnit) {
+                    translationFile.removeTransUnitWithId(tranUnit.id);
+                }
+            });
+        }
+
         return translationFile;
     }
 }

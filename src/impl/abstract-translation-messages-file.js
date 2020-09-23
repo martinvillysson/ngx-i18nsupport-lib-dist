@@ -109,6 +109,15 @@ class AbstractTranslationMessagesFile {
         return this.transUnits.find((tu) => tu.id === id);
     }
     /**
+     * Get optional trans-unit with given id.
+     * @param id id
+     * @return trans-unit with given id.
+     */
+    optionalMasterTransUnitWithId(id) {
+        this.lazyInitializeTransUnits();
+        return this.optionalMasterTransUnits.find((tu) => tu.id === id);
+    }
+    /**
      * Set the praefix used when copying source to target.
      * This is used by importNewTransUnit and createTranslationFileForLang methods.
      * (since 1.8.0)

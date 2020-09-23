@@ -72,6 +72,13 @@ export interface ITranslationMessagesFile {
      */
     transUnitWithId(id: string): ITransUnit;
 
+        /**
+     * Get optional master trans-unit with given id.
+     * @param id id
+     * @return trans-unit with given id.
+     */
+    optionalMasterTransUnitWithId(id: string): ITransUnit;
+
     /**
      * Edit functions following her
      */

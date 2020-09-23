@@ -25,6 +25,8 @@ export abstract class AbstractTranslationMessagesFile implements ITranslationMes
     // trans-unit elements and their id from the file
     protected transUnits: ITransUnit[];
 
+    protected optionalMasterTransUnits: ITransUnit[];
+
     protected _warnings: string[];
 
     protected _numberOfTransUnitsWithMissingId: number;
@@ -178,6 +180,16 @@ export abstract class AbstractTranslationMessagesFile implements ITranslationMes
     public transUnitWithId(id: string): ITransUnit {
         this.lazyInitializeTransUnits();
         return this.transUnits.find((tu) => tu.id === id);
+    }
+
+    /**
+     * Get optional trans-unit with given id.
+     * @param id id
+     * @return trans-unit with given id.
+     */
+    public optionalMasterTransUnitWithId(id: string): ITransUnit {
+        this.lazyInitializeTransUnits();
+        return this.optionalMasterTransUnits.find((tu) => tu.id === id);
     }
 
     /**

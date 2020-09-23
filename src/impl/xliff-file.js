@@ -24,10 +24,10 @@ class XliffFile extends abstract_translation_messages_file_1.AbstractTranslation
         super();
         this._warnings = [];
         this._numberOfTransUnitsWithMissingId = 0;
-        this.initializeFromContent(xmlString, path, encoding);
+        this.initializeFromContent(xmlString, path, encoding, optionalMaster);
     }
-    initializeFromContent(xmlString, path, encoding) {
-        this.parseContent(xmlString, path, encoding);
+    initializeFromContent(xmlString, path, encoding, optionalMaster) {
+        this.parseContent(xmlString, path, encoding, optionalMaster);
         const xliffList = this._parsedDocument.getElementsByTagName('xliff');
         if (xliffList.length !== 1) {
             throw new Error(util_1.format('File "%s" seems to be no xliff file (should contain an xliff element)', path));
@@ -66,26 +66,26 @@ class XliffFile extends abstract_translation_messages_file_1.AbstractTranslation
     }
     initializeTransUnits() {
         this.transUnits = [];
-        let transUnitsInOptionalMasterFile;
         const transUnitsInFile = this._parsedDocument.getElementsByTagName('trans-unit');
-        if (this._parsedOptionalMasterDocument) {
-            transUnitsInOptionalMasterFile = this._parsedOptionalMasterDocument.getElementsByTagName('trans-unit');
-        }
         for (let i = 0; i < transUnitsInFile.length; i++) {
             const transunit = transUnitsInFile.item(i);
             const id = transunit.getAttribute('id');
             if (!id) {
                 this._warnings.push(util_1.format('oops, trans-unit without "id" found in master, please check file %s', this._filename));
             }
-            if (transUnitsInOptionalMasterFile && transUnitsInOptionalMasterFile.length > 0) {
-                const transunitOptionalMaster = transUnitsInOptionalMasterFile.item(i);
-                const idOptionalMaster = transunitOptionalMaster.getAttribute('id');
-                if (!idOptionalMaster) {
-                    this.transUnits.push(new xliff_trans_unit_1.XliffTransUnit(transunit, id, this));
+            this.transUnits.push(new xliff_trans_unit_1.XliffTransUnit(transunit, id, this));
+        }
+        if (this._parsedOptionalMasterDocument) {
+            this.optionalMasterTransUnits = [];
+            // if we has an optional master document we push the optional master transunits to the array
+            const transUnitsInOptionalMasterFile = this._parsedOptionalMasterDocument.getElementsByTagName('trans-unit');
+            for (let i = 0; i < transUnitsInOptionalMasterFile.length; i++) {
+                const transunit = transUnitsInOptionalMasterFile.item(i);
+                const id = transunit.getAttribute('id');
+                if (!id) {
+                    this._warnings.push(util_1.format('oops, trans-unit without "id" found in master, please check file %s', this._filename));
                 }
-            }
-            else {
-                this.transUnits.push(new xliff_trans_unit_1.XliffTransUnit(transunit, id, this));
+                this.optionalMasterTransUnits.push(new xliff_trans_unit_1.XliffTransUnit(transunit, id, this));
             }
         }
     }
@@ -229,6 +229,15 @@ class XliffFile extends abstract_translation_messages_file_1.AbstractTranslation
         translationFile.forEachTransUnit((transUnit) => {
             transUnit.useSourceAsTarget(isDefaultLang, copyContent);
         });
+        if (optionalMaster && translationFile.optionalMasterTransUnits && translationFile.optionalMasterTransUnits.length > 0) {
+            // If optional master is specified we will iterate the master transunits and remove from translation file if they already exist in the master
+            translationFile.optionalMasterTransUnits.forEach(unit => {
+                const tranUnit = translationFile.transUnitWithId(unit.id);
+                if (tranUnit) {
+                    translationFile.removeTransUnitWithId(tranUnit.id);
+                }
+            });
+        }
         return translationFile;
     }
 }
