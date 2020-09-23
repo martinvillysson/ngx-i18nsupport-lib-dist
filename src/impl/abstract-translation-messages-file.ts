@@ -189,7 +189,10 @@ export abstract class AbstractTranslationMessagesFile implements ITranslationMes
      */
     public optionalMasterTransUnitWithId(id: string): ITransUnit {
         this.lazyInitializeTransUnits();
-        return this.optionalMasterTransUnits.find((tu) => tu.id === id);
+        if (this.optionalMasterTransUnits && this.optionalMasterTransUnits.length > 0) {
+            return this.optionalMasterTransUnits.find((tu) => tu.id === id);
+        }
+        return null;
     }
 
     /**
@@ -336,6 +339,6 @@ export abstract class AbstractTranslationMessagesFile implements ITranslationMes
      * Wben true, content will be copied from source.
      * When false, content will be left empty (if it is not the default language).
      */
-    abstract createTranslationFileForLang(lang: string, filename: string, isDefaultLang: boolean, copyContent: boolean, optionalMaster?: {xmlContent: string, path: string, encoding: string})
+    abstract createTranslationFileForLang(lang: string, filename: string, isDefaultLang: boolean, copyContent: boolean, optionalMaster?: { xmlContent: string, path: string, encoding: string })
         : ITranslationMessagesFile;
 }

@@ -607,7 +607,10 @@ class AbstractTranslationMessagesFile {
      */
     optionalMasterTransUnitWithId(id) {
         this.lazyInitializeTransUnits();
-        return this.optionalMasterTransUnits.find((tu) => tu.id === id);
+        if (this.optionalMasterTransUnits && this.optionalMasterTransUnits.length > 0) {
+            return this.optionalMasterTransUnits.find((tu) => tu.id === id);
+        }
+        return null;
     }
     /**
      * Set the praefix used when copying source to target.
